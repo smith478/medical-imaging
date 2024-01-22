@@ -20,9 +20,14 @@ jupyter notebook --ip 0.0.0.0 --no-browser --allow-root --NotebookApp.token=''
 We will be training our model on the Stanford [CheXpert dataset](https://stanfordmlgroup.github.io/competitions/chexpert/) which contains over 200k of radiologist labeled x-ray images.
 
 ## Examples
-Lession classification (notebook and streamlit app)
+- Lession classification (notebook and streamlit app)
+    - Notebook: `./notebooks/Model_Training.ipynb`
 Lession detection - Class activation mapping (notebook and streamlit app)
+    - Notebook: `./notebooks/class_activation_map_visualization.ipynb`
+    - Streamlit app: `./app.py`
 Radiograph position labeling (notebook and streamlit app)
+    - Notebook: `./notebooks/radiology_position_labeling.ipynb`
+    - Streamlit app: `./app_image_clean.py`
 
 ## TODO
 - Add examples of pulling pretrained huggingface models

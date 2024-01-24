@@ -233,7 +233,7 @@ def bootstrap_auc(y, pred, classes, bootstraps=100, fold_size=1000):
     return statistics
 
 
-def plot_calibration_curve(y, pred):
+def plot_calibration_curve(y, pred, target_columns):
     plt.figure(figsize=(20, 20))
     for i in range(len(target_columns)):
         plt.subplot(4, 4, i + 1)

@@ -16,6 +16,12 @@ docker run --gpus all --name tf_gpu -it --rm -p 8888:8888 -p 8501:8501 --entrypo
 jupyter notebook --ip 0.0.0.0 --no-browser --allow-root --NotebookApp.token=''
 ```
 
+## To run the streamlit app
+
+```bash
+streamlit run app.py
+```
+
 ## Dataset
 We will be training our model on the Stanford [CheXpert dataset](https://stanfordmlgroup.github.io/competitions/chexpert/) which contains over 200k of radiologist labeled x-ray images.
 

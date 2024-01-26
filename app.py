@@ -1,11 +1,13 @@
 import streamlit as st
 import tensorflow as tf
+from keras.applications.convnext import LayerScale
+from notebooks.grad_cam import make_gradcam_heatmap
 import numpy as np
 import os
 from tensorflow import keras
 import matplotlib.cm as cm
 
-model_path = os.path.join('/models', 'pretrain_model_ConvNeXtBase_w_ClssWgt_01-0.3616')
+model_path = os.path.join('models', 'pretrain_model_ConvNeXtBase_w_ClssWgt_01-0.3616.h5')
 save_path = os.path.join('heatmap_tmp', 'heatmap_cam.jpg')
 img_size = (640, 640)
 disease_name = 'Pulmonary Nodules'
@@ -14,7 +16,7 @@ classifier_layer_names = ['local_avg_pool', 'flatten', 'prediction']
 
 #@st.cache_resource
 def model_load():
-    model = tf.keras.models.load_model(model_path)
+    model = tf.keras.models.load_model(model_path, custom_objects={'LayerScale': LayerScale})
     return model
 
 
@@ -39,7 +41,7 @@ def main():
         col1, col2 = st.columns(2)
         img = Image.read()
         img = tf.image.decode_image(img, channels=3)
-        img = tf.image.resize_with_pad(img, target_height=750, target_width=750).numpy()
+        img = tf.image.resize_with_pad(img, target_height=img_size[0], target_width=img_size[1]).numpy()
         img = img.astype(np.float32) / 255.
 
         with col1:
@@ -75,8 +77,8 @@ def main():
         with col2:
             st.image(superimposed_img)
 
-        probability = 'Probability of {} is {:.1f}%'.format(disease_name, 100*img_pred[0][1])
-        st.text(probability)
+        # probability = 'Probability of {} is {:.1f}%'.format(disease_name, 100*img_pred[0][1])
+        # st.text(probability)
 
 
 if __name__ == '__main__':

@@ -27,11 +27,23 @@ def main():
 
     st.markdown("<h1>Lesion Detection</h1>", unsafe_allow_html=True)
     st.text("""
-    Select a radiograph to see both the model's predicted likelihood 
-    of enlarged cardiomediastinum, cardiomegaly, lung opacity, lung lesion, edema,
-    consolidation, pneumonia, atelectasis, pneumothorax, pleural effusion, pleural other,
-    fracture, support devices, and the heatmap of the most concerning regions of the 
-    radiograph.
+    Select a chest radiograph to see both the model's predicted likelihood of: 
+    * Enlarged Cardiomediastinum 
+    * Cardiomegaly 
+    * Lung Opacity 
+    * Lung Lesion 
+    * Edema
+    * Consolidation 
+    * Pneumonia 
+    * Atelectasis 
+    * Pneumothorax 
+    * Pleural Effusion 
+    * Pleural Other
+    * Fracture 
+    * Support Devices
+    
+    🔍 Use the sidebar drop down to select the predicted abnormality to visualize (via class activation mapping). 
+    ─ ● ─ Use the opacity slider to adjust the heatmap opacity.
     """)
     model = model_load()
 

@@ -1,4 +1,5 @@
 models/
+model_performance/
 notebooks/heatmap.jpg
 
 # Byte-compiled / optimized / DLL files

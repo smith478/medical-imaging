@@ -7,7 +7,7 @@ import os
 from tensorflow import keras
 import matplotlib.cm as cm
 
-model_path = os.path.join('models', 'pretrain_model_ConvNeXtBase_w_ClssWgt_01-0.3616.h5')
+model_path = os.path.join('models', 'pretrain_model_ConvNeXtSmall_w_ClssWgt_03-0.5216.h5')
 save_path = os.path.join('heatmap_tmp', 'heatmap_cam.jpg')
 img_size = (640, 640)
 disease_name = 'Pulmonary Nodules'

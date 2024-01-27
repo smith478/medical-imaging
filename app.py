@@ -14,11 +14,13 @@ disease_name = 'Pulmonary Nodules'
 last_conv_layer_name = 'block14_sepconv2'
 classifier_layer_names = ['local_avg_pool', 'flatten', 'prediction']
 
-#@st.cache_resource
+@st.cache_resource
 def model_load():
     model = tf.keras.models.load_model(model_path, custom_objects={'LayerScale': LayerScale})
     return model
 
+def update_inference_required():
+    st.session_state['inference_required'] = True
 
 def main():
     st.set_page_config(layout="wide")
@@ -33,9 +35,19 @@ def main():
     """)
     model = model_load()
 
-    alpha = st.sidebar.slider('Heatmap opacity adjust', min_value=0.0, max_value=1.0, value=0.2, step=0.05)
+    model_classes = ['No Finding', 'Enlarged Cardiomediastinum', 'Cardiomegaly', 'Lung Opacity',
+                     'Lung Lesion', 'Edema', 'Consolidation', 'Pneumonia', 'Atelectasis',
+                     'Pneumothorax', 'Pleural Effusion', 'Pleural Other', 'Fracture',
+                     'Support Devices']
 
-    Image = st.file_uploader('Upload your radiograph here', type=['jpg', 'jpeg', 'png'])
+    if 'inference_required' not in st.session_state:
+        st.session_state['inference_required'] = True
+
+    alpha = st.sidebar.slider('Heatmap opacity adjust', min_value=0.0, max_value=1.0, value=0.2, step=0.05)
+    grad_cam_class = st.sidebar.selectbox('Select a disease to show the heatmap for:', model_classes, on_change=update_inference_required)
+    grad_cam_index = model_classes.index(grad_cam_class)
+
+    Image = st.file_uploader('Upload your radiograph here', type=['jpg', 'jpeg', 'png'], on_change=update_inference_required)
 
     if Image is not None:
         col1, col2 = st.columns(2)
@@ -48,20 +60,28 @@ def main():
             st.image(img)
 
         img = np.expand_dims(img, axis=0)
-        img_pred = model.predict(img)
 
-        heatmap = make_gradcam_heatmap(img_array=img, model=model, last_conv_layer_name=last_conv_layer_name,
-                                       classifier_layer_names=classifier_layer_names)
+        if st.session_state['inference_required']:
+            img_pred = model.predict(img)
+            heatmap = make_gradcam_heatmap(img_array=img, 
+                                           model=model, 
+                                           last_conv_layer_name=last_conv_layer_name,
+                                           classifier_layer_names=classifier_layer_names,
+                                           class_index=grad_cam_index)
 
-        # We rescale heatmap to a range 0-255
-        heatmap = np.uint8(255 * heatmap)
+            # We rescale heatmap to a range 0-255
+            heatmap = np.uint8(255 * heatmap)
+
+            st.session_state['img_pred'] = img_pred
+            st.session_state['heatmap'] = heatmap
+            st.session_state['inference_required'] = False
 
         # We use jet colormap to colorize heatmap
         jet = cm.get_cmap("jet")
 
         # We use RGB values of the colormap
         jet_colors = jet(np.arange(256))[:, :3]
-        jet_heatmap = jet_colors[heatmap]
+        jet_heatmap = jet_colors[st.session_state['heatmap']]
 
         # We create an image with RGB colorized heatmap
         jet_heatmap = np.squeeze(jet_heatmap)
@@ -77,7 +97,9 @@ def main():
         with col2:
             st.image(superimposed_img)
 
-        # probability = 'Probability of {} is {:.1f}%'.format(disease_name, 100*img_pred[0][1])
+        for class_name, class_prob in zip(model_classes, st.session_state['img_pred'][0]):
+            st.text('{}: {:.1f}%'.format(class_name, 100*class_prob))
+        # probability = 'Probability of {} is {:.1f}%'.format(disease_name, 100*st.session_state['img_pred'][0][1])
         # st.text(probability)
 
 

@@ -55,9 +55,9 @@ def main():
     if 'inference_required' not in st.session_state:
         st.session_state['inference_required'] = True
 
-    alpha = st.sidebar.slider('Heatmap opacity adjust', min_value=0.0, max_value=1.0, value=0.2, step=0.05)
     grad_cam_class = st.sidebar.selectbox('Select a disease to show the heatmap for:', model_classes, on_change=update_inference_required)
     grad_cam_index = model_classes.index(grad_cam_class)
+    alpha = st.sidebar.slider('Heatmap opacity adjust', min_value=0.0, max_value=1.0, value=0.2, step=0.05)
 
     Image = st.file_uploader('Upload your radiograph here', type=['jpg', 'jpeg', 'png'], on_change=update_inference_required)
 

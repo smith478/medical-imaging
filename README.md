@@ -1,6 +1,8 @@
 # Medical imaging
 
-This repo contains a set of tools for classification and detection tasks for medical imaging applications. 
+This repo contains a set of tools for classification and detection tasks for medical imaging applications. There is a streamlit app that allows you to upload images and visualize the model predictions using gradient based class activation mapping (grad CAM).
+
+![streamlit_example](images/pleural_effusion_example.png)
 
 ## To run from docker
 

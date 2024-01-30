@@ -3,7 +3,6 @@ import numpy as np
 import pandas as pd
 
 root_directory = '/data/CheXpert-v1.0'
-valid_folder = os.path.join(root_directory, 'valid')
 
 chexnet_targets = ['No Finding', 'Enlarged Cardiomediastinum', 'Cardiomegaly', 'Lung Opacity',
                    'Lung Lesion', 'Edema', 'Consolidation', 'Pneumonia', 'Atelectasis',
@@ -33,24 +32,31 @@ def feature_string(row):
             
     return ';'.join(feature_list)
 
-def prepare_data():
-    valid_labels_df = pd.read_csv(os.path.join(root_directory, 'valid.csv'))
+def prepare_data(split: str = 'valid'):
+    admissible_split_values = ['train', 'valid']
+    assert split in admissible_split_values, f'A split value of {split} was given. The admissible split values are {admissible_split_values}.'
+    
+    if split == 'valid':
+        file = 'valid.csv'
+    else:
+        file = 'train.csv'
+    df = pd.read_csv(os.path.join(root_directory, file))
 
-    valid_labels_df['patient'] = valid_labels_df['Path'].apply(lambda x: os.path.split(os.path.split(os.path.split(x)[0])[0])[1])
-    valid_labels_df['study'] = valid_labels_df['Path'].apply(lambda x: os.path.split(os.path.split(x)[0])[1])
+    df['patient'] = df['Path'].apply(lambda x: os.path.split(os.path.split(os.path.split(x)[0])[0])[1])
+    df['study'] = df['Path'].apply(lambda x: os.path.split(os.path.split(x)[0])[1])
 
-    valid_labels_df['feature_string'] = valid_labels_df.apply(feature_string,axis = 1).fillna('')
-    valid_labels_df['feature_string'] = valid_labels_df['feature_string'].apply(lambda x:x.split(";"))
+    df['feature_string'] = df.apply(feature_string,axis = 1).fillna('')
+    df['feature_string'] = df['feature_string'].apply(lambda x:x.split(";"))
 
     for col in u_one_features:
-        valid_labels_df[f'{col}_u_one'] = label_u_one_features(df=valid_labels_df, column=col)
+        df[f'{col}_u_one'] = label_u_one_features(df=df, column=col)
     for col in u_zero_features:
-        valid_labels_df[f'{col}_u_zero'] = label_u_zero_features(df=valid_labels_df, column=col)
+        df[f'{col}_u_zero'] = label_u_zero_features(df=df, column=col)
 
-    valid_labels_df['path'] = '/data/' + valid_labels_df['Path']
+    df['path'] = '/data/' + df['Path']
     targets = [target + '_u_zero' for target in u_zero_features]
 
-    X_val = valid_labels_df['path'].values
-    y_val = valid_labels_df[targets].values
+    X = df['path'].values
+    y = df[targets].values
 
-    return X_val, y_val, valid_labels_df, targets
+    return X, y, df, targets

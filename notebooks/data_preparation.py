@@ -12,7 +12,7 @@ chexnet_targets = ['No Finding', 'Enlarged Cardiomediastinum', 'Cardiomegaly', '
 chexpert_targets = ['Atelectasis', 'Cardiomegaly', 'Consolidation', 'Edema', 'Pleural Effusion']
 
 u_one_features = []
-u_zero_features = chexnet_targets 
+u_zero_features = chexnet_targets
 
 def label_u_one_features(df: pd.DataFrame, column: str):
     return np.where((df[column] == 1) | (df[column] == -1), 1, 0)
@@ -54,7 +54,9 @@ def prepare_data(split: str = 'valid'):
         df[f'{col}_u_zero'] = label_u_zero_features(df=df, column=col)
 
     df['path'] = '/data/' + df['Path']
-    targets = [target + '_u_zero' for target in u_zero_features]
+    targets_u_one = [target + '_u_one' for target in u_one_features]
+    targets_u_zero = [target + '_u_zero' for target in u_zero_features]
+    targets = targets_u_one + targets_u_zero
 
     X = df['path'].values
     y = df[targets].values
